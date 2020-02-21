@@ -1,0 +1,20 @@
+{
+  "multipart": [
+    { "when": { "first_end": "north" }, "apply": { "model": "techmod:block/cablecar_track_normal" }},
+    { "when": { "first_end": "south" }, "apply": { "model": "techmod:block/cablecar_track_normal", "y": 180, "uvlock": true }},
+    { "when": { "first_end": "west" }, "apply": { "model": "techmod:block/cablecar_track_normal", "y": 270 }},
+    { "when": { "first_end": "east" }, "apply": { "model": "techmod:block/cablecar_track_normal", "y": 90 }},
+
+    { "when": { "second_end": "south" }, "apply": { "model": "techmod:block/cablecar_track_normal", "y": 180, "uvlock": true }},
+    { "when": { "second_end": "west" }, "apply": { "model": "techmod:block/cablecar_track_normal", "y": 270 }},
+    { "when": { "second_end": "east" }, "apply": { "model": "techmod:block/cablecar_track_normal", "y": 90 }},
+
+    { "when": { "first_end": "north", "second_end": "south" }, "apply": { "model": "techmod:block/cablecar_track_middle" }},
+    { "when": { "first_end": "west", "second_end": "east" }, "apply": { "model": "techmod:block/cablecar_track_middle", "y": 90 }},
+
+    { "when": { "first_end": "south", "second_end": "east" }, "apply": { "model": "techmod:block/cablecar_track_curve", "y": 180 }},
+    { "when": { "first_end": "south", "second_end": "west" }, "apply": { "model": "techmod:block/cablecar_track_curve", "y": 270 }},
+    { "when": { "first_end": "north", "second_end": "west" }, "apply": { "model": "techmod:block/cablecar_track_curve" }},
+    { "when": { "first_end": "north", "second_end": "east" }, "apply": { "model": "techmod:block/cablecar_track_curve", "y": 90 }}
+  ]
+}

@@ -6,7 +6,7 @@ authors="Jan van Brügge"
 
 [[mods]]
 	modId="techmod"
-	version="${file.jarVersion}"
+	version="0.0.1"
 	displayName="Tech Mod"
 	description="Tech mod for 1.15"
 
