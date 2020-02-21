@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[31,)"
+issueTrackerURL="https://github.com/jvanbruegge/TechMod/issues"
+displayURL="https://github.com/jvanbruegge/TechMod"
+authors="Jan van Brügge"
+
+[[mods]]
+	modId="techmod"
+	version="${file.jarVersion}"
+	displayName="Tech Mod"
+	description="Tech mod for 1.15"
+
+	[[dependencies.techmod]]
+	    modId="forge"
+	    mandatory=true
+	    versionRange="[31.1.0,)"
+	    ordering="NONE"
+	    side="BOTH"
+
+	[[dependencies.techmod]]
+	    modId="minecraft"
+	    mandatory=true
+	    versionRange="[1.15,1.15.2]"
+	    ordering="NONE"
+	    side="BOTH"
