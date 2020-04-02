@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "techmod:block/cablecar_deployer" }
+  }
+}
