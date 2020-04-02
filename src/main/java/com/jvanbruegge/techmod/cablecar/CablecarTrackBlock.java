@@ -5,9 +5,8 @@ import com.jvanbruegge.techmod.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
@@ -19,13 +18,12 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CablecarTrackBlock extends TechModBlock {
+public class CablecarTrackBlock extends TechModBlock implements CablecarConnectable {
     private static final EnumProperty<Direction> firstEnd = EnumProperty.create("first_end", Direction.class);
     private static final EnumProperty<Direction> secondEnd = EnumProperty.create("second_end", Direction.class);
 
@@ -58,8 +56,8 @@ public class CablecarTrackBlock extends TechModBlock {
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        List<BlockPos> neighbors = TechModBlock.getNeighborBlocks(worldIn, pos, CablecarTrackBlock.class);
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
+        List<BlockPos> neighbors = TechModBlock.getNeighborBlocks(context.getWorld(), context.getPos(), CablecarConnectable.class);
         List<Direction> ourConnections = new ArrayList<>();
 
         for(BlockPos neighbor : neighbors) {
@@ -67,36 +65,53 @@ public class CablecarTrackBlock extends TechModBlock {
                 break;
             }
 
-            List<BlockPos> connections = CablecarTrackBlock.getConnections(worldIn, neighbor);
+            Direction current = Utils.getDirection(context.getPos(), neighbor);
+            BlockState state = context.getWorld().getBlockState(neighbor);
+            CablecarConnectable other = (CablecarConnectable)state.getBlock();
 
-            if(connections.size() == 2) { // Block is already fully connected, no changes to this neighbor
-                continue;
-            } else if(connections.size() == 1 && !connections.get(0).equals(pos)) { // Only one end is connected, connect to the second one
-                Direction existingConnection = Utils.getDirection(neighbor, connections.get(0));
-                Direction newConnection = Utils.getDirection(neighbor, pos);
-                worldIn.setBlockState(neighbor, this.createState(existingConnection, newConnection));
-                ourConnections.add(newConnection.getOpposite());
-            } else { // No connections, connect and make neighbor a straight track
-                Direction conDir = Utils.getDirection(pos, neighbor);
-                BlockState neighborState = conDir == Direction.NORTH || conDir == Direction.SOUTH
-                        ? this.createState(Direction.NORTH, Direction.SOUTH)
-                        : this.createState(Direction.EAST, Direction.WEST);
-                worldIn.setBlockState(neighbor, neighborState);
-
-                ourConnections.add(conDir);
+            if(other.connectTo(context.getPos(), context.getWorld(), neighbor, state)) {
+                ourConnections.add(current);
             }
         }
 
-        BlockState newState = this.createState(Direction.NORTH, Direction.SOUTH);
+        BlockState state = this.createState(Direction.NORTH, Direction.SOUTH);
 
         if(ourConnections.size() == 1) {
             ourConnections.add(ourConnections.get(0).getOpposite());
         }
         if(ourConnections.size() == 2) {
-            newState = this.createState(ourConnections.get(0), ourConnections.get(1));
+            state = this.createState(ourConnections.get(0), ourConnections.get(1));
         }
 
-        worldIn.setBlockState(pos, newState);
+        return state;
+    }
+
+    @Override
+    public boolean hasConnection(Direction dir, BlockPos ownPos, BlockState ownState) {
+        return dir.equals(ownState.get(firstEnd)) || dir.equals(ownState.get(secondEnd));
+    }
+
+    @Override
+    public boolean connectTo(BlockPos pos, World world, BlockPos ownPos, BlockState ownState) {
+        List<Direction> connections = Stream.of(ownState.get(firstEnd), ownState.get(secondEnd))
+                .filter(dir -> {
+                    BlockPos other = ownPos.offset(dir);
+                    BlockState state = world.getBlockState(other);
+
+                    return state.getBlock() instanceof CablecarConnectable
+                            && ((CablecarConnectable)state.getBlock()).hasConnection(dir.getOpposite(), other, state);
+                })
+                .collect(Collectors.toList());
+
+        if(connections.size() == 2) {
+            return false;
+        } else {
+            Direction first = Utils.getDirection(ownPos, pos);
+            Direction second = connections.size() == 1 ? connections.get(0) : first.getOpposite();
+
+            world.setBlockState(ownPos, this.createState(first, second));
+            return true;
+        }
     }
 
     private BlockState createState(Direction first, Direction second) {
@@ -109,20 +124,5 @@ public class CablecarTrackBlock extends TechModBlock {
                     .with(firstEnd, second)
                     .with(secondEnd, first);
         }
-    }
-
-    /**
-     * Returns those neighbors where `pos.(firstEnd || secondEnd) == invert(neighbor.(firstEnd || secondEnd))`
-     */
-    public static List<BlockPos> getConnections(World world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        return Stream.of(state.get(firstEnd), state.get(secondEnd))
-                .filter(dir -> world.getBlockState(pos.offset(dir)).getBlock() instanceof CablecarTrackBlock)
-                .filter(dir -> {
-                    BlockState s = world.getBlockState(pos.offset(dir));
-                    return s.get(firstEnd) == dir.getOpposite() || s.get(secondEnd) == dir.getOpposite();
-                })
-                .map(dir -> pos.offset(dir))
-                .collect(Collectors.toList());
     }
 }

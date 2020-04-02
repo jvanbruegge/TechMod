@@ -10,11 +10,13 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class CablecarDeployerBlock extends TechModBlock {
+public class CablecarDeployerBlock extends TechModBlock implements CablecarConnectable {
     private static final EnumProperty<Direction> facing = EnumProperty.create("facing", Direction.class);
 
     public CablecarDeployerBlock() {
@@ -30,7 +32,8 @@ public class CablecarDeployerBlock extends TechModBlock {
                 .stream()
                 .filter(x -> x != Direction.UP && x != Direction.DOWN)
                 .collect(Collectors.toList())
-                .get(0);
+                .get(0)
+                .getOpposite();
         if(context.getPlayer() != null && context.getPlayer().isCrouching()) {
             dir = dir.getOpposite();
         }
@@ -40,5 +43,15 @@ public class CablecarDeployerBlock extends TechModBlock {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(new IProperty[]{ facing });
+    }
+
+    @Override
+    public boolean hasConnection(Direction dir, BlockPos ownPos, BlockState ownState) {
+        return dir.equals(ownState.get(facing));
+    }
+
+    @Override
+    public boolean connectTo(BlockPos pos, World world, BlockPos ownPosition, BlockState state) {
+        return ownPosition.offset(state.get(facing)).equals(pos);
     }
 }

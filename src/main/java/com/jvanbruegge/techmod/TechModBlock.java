@@ -33,10 +33,10 @@ public class TechModBlock extends Block {
         );
     }
 
-    public static List<BlockPos> getNeighborBlocks(World world, BlockPos pos, Class<? extends Block> clazz) {
+    public static List<BlockPos> getNeighborBlocks(World world, BlockPos pos, Class<?> clazz) {
         return StreamSupport.stream(((Iterable<Direction>) () -> Direction.Plane.HORIZONTAL.iterator()).spliterator(), false)
                 .map(dir -> pos.offset(dir))
-                .filter(p -> world.getBlockState(p).getBlock().getClass() == clazz)
+                .filter(p -> clazz.isAssignableFrom(world.getBlockState(p).getBlock().getClass()))
                 .collect(Collectors.toList());
     }
 }
