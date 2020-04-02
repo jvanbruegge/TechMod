@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "techmod:block/cablecar_deployer" }
+    "facing=north": { "model": "techmod:block/cablecar_deployer" },
+    "facing=east": { "model": "techmod:block/cablecar_deployer", "y": 90 },
+    "facing=south": { "model": "techmod:block/cablecar_deployer", "y": 180 },
+    "facing=west": { "model": "techmod:block/cablecar_deployer", "y": 270 }
   }
 }

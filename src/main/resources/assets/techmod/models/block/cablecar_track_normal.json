@@ -1,6 +1,7 @@
 {
 	"credit": "Made with Blockbench",
   	"textures": {
+		"particle": "#rail",
 		"rail": "block/rail",
 		"oak": "block/oak_planks"
 	},
