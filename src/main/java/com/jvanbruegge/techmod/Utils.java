@@ -5,8 +5,11 @@ import net.java.games.input.Mouse;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -31,5 +34,11 @@ public class Utils {
 
     public static void restoreMouse() {
         InputMappings.setCursorPosAndMode(Minecraft.getInstance().getMainWindow().getHandle(), 212993, 0, 0);
+    }
+
+    public static void dropInventoryItems(World world, BlockPos pos, IItemHandler inventory) {
+        for(int i = 0; i < inventory.getSlots(); i++) {
+            InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), inventory.getStackInSlot(i));
+        }
     }
 }

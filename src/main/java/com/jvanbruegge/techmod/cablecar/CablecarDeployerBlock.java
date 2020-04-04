@@ -1,6 +1,8 @@
 package com.jvanbruegge.techmod.cablecar;
 
 import com.jvanbruegge.techmod.TechModBlock;
+import com.jvanbruegge.techmod.TechModTileEntityTypes;
+import com.jvanbruegge.techmod.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -9,9 +11,13 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -38,6 +44,41 @@ public class CablecarDeployerBlock extends TechModBlock implements CablecarConne
             dir = dir.getOpposite();
         }
         return this.getDefaultState().with(facing, dir);
+    }
+
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return TechModTileEntityTypes.CablecarDeployer.getType().create();
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
+        TileEntity entity = world.getTileEntity(pos);
+        return entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                .map(ItemHandlerHelper::calcRedstoneFromInventory)
+                .orElse(0);
+    }
+
+    @Override
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState other, boolean p_196243_5_) {
+        if(state.getBlock() != other.getBlock()) {
+            TileEntity entity = world.getTileEntity(pos);
+            entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(inventory -> {
+                Utils.dropInventoryItems(world, pos, inventory);
+                world.updateComparatorOutputLevel(pos, this);
+            });
+        }
+        super.onReplaced(state, world, pos, other, p_196243_5_);
     }
 
     @Override
