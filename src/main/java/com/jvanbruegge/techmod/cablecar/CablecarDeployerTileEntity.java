@@ -1,6 +1,6 @@
 package com.jvanbruegge.techmod.cablecar;
 
-import com.jvanbruegge.techmod.TechModTileEntityTypes;
+import com.jvanbruegge.techmod.Registrator;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -23,7 +23,7 @@ public class CablecarDeployerTileEntity extends TileEntity {
     });
 
     public CablecarDeployerTileEntity() {
-        super(TechModTileEntityTypes.CablecarDeployer.getType());
+        super(Registrator.CablecarDeployer.getTileEntityType());
     }
 
     @Override

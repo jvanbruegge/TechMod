@@ -1,13 +1,11 @@
 package com.jvanbruegge.techmod.cablecar;
 
-import com.jvanbruegge.techmod.TechModBlock;
-import com.jvanbruegge.techmod.TechModTileEntityTypes;
+import com.jvanbruegge.techmod.Registrator;
 import com.jvanbruegge.techmod.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
@@ -22,11 +20,11 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class CablecarDeployerBlock extends TechModBlock implements CablecarConnectable {
+public class CablecarDeployerBlock extends Block implements CablecarConnectable {
     private static final EnumProperty<Direction> facing = EnumProperty.create("facing", Direction.class);
 
     public CablecarDeployerBlock() {
-        super(Properties.create(Material.PISTON), "cablecar_deployer", ItemGroup.TRANSPORTATION);
+        super(Properties.create(Material.PISTON));
         this.setDefaultState(
                 this.getStateContainer().getBaseState().with(facing, Direction.NORTH)
         );
@@ -53,7 +51,7 @@ public class CablecarDeployerBlock extends TechModBlock implements CablecarConne
 
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return TechModTileEntityTypes.CablecarDeployer.getType().create();
+        return Registrator.CablecarDeployer.getTileEntityType().create();
     }
 
     @Override

@@ -1,12 +1,10 @@
 package com.jvanbruegge.techmod.cablecar;
 
-import com.jvanbruegge.techmod.TechModBlock;
 import com.jvanbruegge.techmod.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
@@ -23,12 +21,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CablecarTrackBlock extends TechModBlock implements CablecarConnectable {
+public class CablecarTrackBlock extends Block implements CablecarConnectable {
     private static final EnumProperty<Direction> firstEnd = EnumProperty.create("first_end", Direction.class);
     private static final EnumProperty<Direction> secondEnd = EnumProperty.create("second_end", Direction.class);
 
     public CablecarTrackBlock() {
-        super(Properties.create(Material.PISTON), "cablecar_track", ItemGroup.TRANSPORTATION);
+        super(Properties.create(Material.PISTON));
         this.setDefaultState(
                 this.getStateContainer().getBaseState()
                         .with(firstEnd, Direction.NORTH)
@@ -57,7 +55,7 @@ public class CablecarTrackBlock extends TechModBlock implements CablecarConnecta
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        List<BlockPos> neighbors = TechModBlock.getNeighborBlocks(context.getWorld(), context.getPos(), CablecarConnectable.class);
+        List<BlockPos> neighbors = Utils.getNeighborBlocks(context.getWorld(), context.getPos(), CablecarConnectable.class);
         List<Direction> ourConnections = new ArrayList<>();
 
         for(BlockPos neighbor : neighbors) {
