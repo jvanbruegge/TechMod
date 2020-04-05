@@ -5,15 +5,22 @@ import com.jvanbruegge.techmod.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -77,6 +84,15 @@ public class CablecarDeployerBlock extends Block implements CablecarConnectable 
             });
         }
         super.onReplaced(state, world, pos, other, p_196243_5_);
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity entity, Hand hand, BlockRayTraceResult trace) {
+        if(!world.isRemote) {
+            TileEntity tileEntity = world.getTileEntity(pos);
+            NetworkHooks.openGui((ServerPlayerEntity) entity, (INamedContainerProvider) tileEntity, pos);
+        }
+        return ActionResultType.SUCCESS;
     }
 
     @Override
