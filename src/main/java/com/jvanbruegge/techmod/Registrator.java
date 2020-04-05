@@ -1,12 +1,8 @@
 package com.jvanbruegge.techmod;
 
-import com.jvanbruegge.techmod.cablecar.CablecarDeployerBlock;
-import com.jvanbruegge.techmod.cablecar.CablecarDeployerContainer;
-import com.jvanbruegge.techmod.cablecar.CablecarDeployerTileEntity;
-import com.jvanbruegge.techmod.cablecar.CablecarTrackBlock;
-import com.jvanbruegge.techmod.misc.Tuple3;
-import com.jvanbruegge.techmod.misc.ZipList3Iterable;
+import com.jvanbruegge.techmod.cablecar.*;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -18,9 +14,9 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.network.IContainerFactory;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = TechMod.MODID, bus = Bus.MOD)
@@ -36,8 +32,8 @@ public enum Registrator {
     Registrator(String name, Block block, ItemGroup group) {
         this(name, block, group, null, (ContainerType<?>)null);
     }
-    Registrator(String name, Block block, ItemGroup group, Supplier<? extends TileEntity> entity, IContainerFactory<?> factory) {
-       this(name, block, group, TileEntityType.Builder.create(entity, block).build(null), IForgeContainerType.create(factory));
+    Registrator(String name, Block block, ItemGroup group, Supplier<? extends TileEntity> entity, IContainerFactory<?> container) {
+       this(name, block, group, TileEntityType.Builder.create(entity, block).build(null), IForgeContainerType.create(container));
     }
     Registrator(String name, Block block, ItemGroup group, TileEntityType<?> entityType, ContainerType<?> containerType) {
         this.name = name;
@@ -84,14 +80,10 @@ public enum Registrator {
 
     @SubscribeEvent
     public static void registerBlockItems(RegistryEvent.Register<Item> event) {
-        List<Block> blocks = Utils.getEnumValues(Registrator.class, Registrator::getBlock);
-        List<ItemGroup> groups = Utils.getEnumValues(Registrator.class, Registrator::getGroup);
-        List<String> names = Utils.getEnumValues(Registrator.class, Registrator::getName);
-
-        for(Tuple3<Block, ItemGroup, String> tuple : new ZipList3Iterable<>(blocks, groups, names)) {
+        for(Registrator val : values()) {
             event.getRegistry().register(
-                    new BlockItem(tuple.a, new Item.Properties().group(tuple.b))
-                            .setRegistryName(TechMod.MODID, tuple.c)
+                    new BlockItem(val.getBlock(), new Item.Properties().group(val.getGroup()))
+                            .setRegistryName(TechMod.MODID, val.getName())
             );
         }
     }
@@ -100,6 +92,15 @@ public enum Registrator {
     public static void registerTileEntityTypes(RegistryEvent.Register<TileEntityType<?>> event) {
         for(TileEntityType<?> type : Utils.getEnumValues(Registrator.class, Registrator::getTileEntityType)) {
             if(type != null) event.getRegistry().register(type);
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerContainerTypes(RegistryEvent.Register<ContainerType<?>> event) {
+        for(ContainerType<?> type : Utils.getEnumValues(Registrator.class, Registrator::getContainerType)) {
+            if(type != null) {
+                event.getRegistry().register(type);
+            }
         }
     }
 }
