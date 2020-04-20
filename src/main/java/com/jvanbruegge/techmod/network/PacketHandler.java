@@ -2,7 +2,7 @@ package com.jvanbruegge.techmod.network;
 
 import com.jvanbruegge.techmod.TechMod;
 import com.jvanbruegge.techmod.network.cablecar.CloseInventoryMessage;
-import com.jvanbruegge.techmod.network.cablecar.EnableTextboxMessage;
+import com.jvanbruegge.techmod.network.cablecar.ActivateSliderMessage;
 import com.jvanbruegge.techmod.network.cablecar.UpdateDataMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.IPacket;
@@ -43,9 +43,13 @@ public class PacketHandler {
                 CloseInventoryMessage::encode, CloseInventoryMessage::decode,
                 MessageHandlerOnServer.create(CloseInventoryMessage::onMessage)
         );
-        channel.registerMessage(id++, EnableTextboxMessage.class,
-                EnableTextboxMessage::encode, EnableTextboxMessage::decode,
-                MessageHandlerOnClient.create(EnableTextboxMessage::onMessage)
+        channel.registerMessage(id++, ActivateSliderMessage.Client.class,
+                ActivateSliderMessage::encode, ActivateSliderMessage.Client::decode,
+                MessageHandlerOnClient.create(ActivateSliderMessage.Client::onMessage)
+        );
+        channel.registerMessage(id++, ActivateSliderMessage.Server.class,
+                ActivateSliderMessage::encode, ActivateSliderMessage.Server::decode,
+                MessageHandlerOnServer.create(ActivateSliderMessage.Server::onMessage)
         );
         channel.registerMessage(id++, UpdateDataMessage.Client.class,
                 UpdateDataMessage.Client::encode, UpdateDataMessage.Client::decode,

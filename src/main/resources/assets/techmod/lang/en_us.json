@@ -4,5 +4,8 @@
   "block.techmod.cablecar_deployer.mode": "Mode",
   "block.techmod.cablecar_deployer.digital": "Digital",
   "block.techmod.cablecar_deployer.analog": "Analog",
+  "block.techmod.cablecar_deployer.carts": "Carts",
+  "block.techmod.cablecar_deployer.keep": "Keep",
+  "block.techmod.cablecar_deployer.eject": "Eject",
   "block.techmod.cablecar_track": "Cablecar Track"
 }

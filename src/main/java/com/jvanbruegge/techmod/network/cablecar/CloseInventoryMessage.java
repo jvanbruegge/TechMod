@@ -36,7 +36,7 @@ class CloseInventoryMessage {
             if(!hasEnabled) {
                 ServerPlayerEntity receiver = (ServerPlayerEntity) active.get(0);
                 ((CablecarDeployerContainer)receiver.openContainer).setEnabled(true);
-                PacketHandler.sendToPlayer(new EnableTextboxMessage(msg.getPos()), receiver);
+                PacketHandler.sendToPlayer(new ActivateSliderMessage.Client(msg.getPos(), false), receiver);
             }
         }
     }

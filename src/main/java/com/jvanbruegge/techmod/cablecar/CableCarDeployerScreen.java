@@ -1,22 +1,22 @@
 package com.jvanbruegge.techmod.cablecar;
 
 import com.jvanbruegge.techmod.TechMod;
+import com.jvanbruegge.techmod.gui.TechModSlider;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 
 public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerContainer> {
     private final ResourceLocation guiTexture = new ResourceLocation(TechMod.MODID, "textures/gui/cablecar_deployer.png");
-    private final ITextComponent multiplierText = new TranslationTextComponent("block.techmod.cablecar_deployer.multiplier");
 
-    private TextFieldWidget multiplier;
+    private TechModSlider multiplier;
     private Button mode;
+    private Button keepCarts;
 
     public CableCarDeployerScreen(CablecarDeployerContainer container, PlayerInventory inventory, ITextComponent textComponent) {
         super(container, inventory, textComponent);
@@ -27,26 +27,27 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
     protected void init() {
         super.init();
         this.minecraft.keyboardListener.enableRepeatEvents(true);
-        this.multiplier = new TextFieldWidget(this.font, this.guiLeft + 91, this.guiTop + 35, 24, 12, I18n.format("block.techmod.cablecar_deployer.multiplier"));
-        this.multiplier.setCanLoseFocus(false);
-        this.multiplier.changeFocus(true);
-        this.multiplier.setTextColor(-1);
-        this.multiplier.setDisabledTextColour(-1);
-        this.multiplier.setEnableBackgroundDrawing(false);
-        this.multiplier.setMaxStringLength(2);
+        this.multiplier = new TechModSlider(
+                this.guiLeft + 41, this.guiTop + 29, 128, 20,
+                I18n.format("block.techmod.cablecar_deployer.multiplier") + ": ", "",
+                1, 64, this.container.getMultiplier(), false, true, slider -> {
+                    this.container.setMultiplier(slider.getValueInt(), true);
+                }, slider -> this.container.setActive(true), slider -> this.container.setActive(false)
+        );
         this.multiplier.setEnabled(this.container.isEnabled());
-        this.multiplier.setValidator(text -> text.matches("\\d*") && (text.length() == 0 || Integer.parseInt(text) <= 64));
-        this.multiplier.setText(Integer.toString(this.container.getMultiplier()));
-        this.multiplier.setResponder(this::onTextUpdate);
         this.children.add(this.multiplier);
         this.container.setScreen(this);
-        this.setFocusedDefault(this.multiplier);
 
         this.mode = new Button(this.guiLeft + 7, this.guiTop + 55, 76, 20, this.getModeText(), button -> {
             this.container.setBinary(!this.container.isBinary(), true);
             button.setMessage(this.getModeText());
         });
+        this.keepCarts = new Button(this.guiLeft + 93, this.guiTop + 55, 76, 20, this.getKeepCartsText(), button -> {
+            this.container.setKeepCarts(!this.container.isKeepCarts(), true);
+            button.setMessage(this.getKeepCartsText());
+        });
         this.addButton(mode);
+        this.addButton(keepCarts);
     }
 
     private String getModeText() {
@@ -57,9 +58,12 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
         return base + ": " + name;
     }
 
-    private void onTextUpdate(String text) {
-        int mult = text.equals("") ? 0 : Integer.parseInt(text);
-        this.container.setMultiplier(mult, true);
+    private String getKeepCartsText() {
+        String base = I18n.format("block.techmod.cablecar_deployer.carts");
+
+        String keep = this.container.isKeepCarts() ? "keep" : "eject";
+        String name = I18n.format("block.techmod.cablecar_deployer." + keep);
+        return base + ": " + name;
     }
 
     @Override
@@ -72,19 +76,9 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int p_keyPressed_2_, int p_keyPressed_3_) {
-        if (keyCode == 256) {
-            this.minecraft.player.closeScreen();
-        }
-
-        return !this.multiplier.keyPressed(keyCode, p_keyPressed_2_, p_keyPressed_3_) && !this.multiplier.canWrite() ? super.keyPressed(keyCode, p_keyPressed_2_, p_keyPressed_3_) : true;
-    }
-
-    @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         this.font.drawString(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
         this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.ySize - 96 + 2), 4210752);
-        this.font.drawString(this.multiplierText.getFormattedText(), 87.0F, 21.0F, 4210752);
     }
 
     @Override
@@ -95,15 +89,20 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
         this.blit(this.guiLeft + 87, this.guiTop + 31, 0,  this.container.isEnabled() ? 176 : 192, 28, 16);
     }
 
-    public void setMuliplier(int multiplier) {
-        this.multiplier.setText(Integer.toString(multiplier));
+    public void setSliderEnabled(boolean enabled) {
+        this.multiplier.setEnabled(enabled);
     }
 
-    public void setTextEnabled(boolean enabled) {
-        this.multiplier.setEnabled(enabled);
+    public void setMuliplier(int multiplier) {
+        this.multiplier.setValue(multiplier);
+        this.multiplier.updateSlider();
     }
 
     public void updateMode() {
         this.mode.setMessage(this.getModeText());
+    }
+
+    public void updateKeepCarts() {
+        this.keepCarts.setMessage(this.getKeepCartsText());
     }
 }

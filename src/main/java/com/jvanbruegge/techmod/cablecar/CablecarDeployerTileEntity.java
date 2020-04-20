@@ -28,6 +28,8 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
     private int multiplier = 1;
     @Getter
     private boolean binary = true;
+    @Getter
+    private boolean keepCarts = true;
 
     private LazyOptional<ItemStackHandler> inventory = LazyOptional.of(() -> new ItemStackHandler(1) {
         @Override
@@ -49,12 +51,17 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
         this.binary = binary;
         this.markDirty();
     }
+    public void setKeepCarts(boolean keepCarts) {
+        this.keepCarts = keepCarts;
+        this.markDirty();
+    }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         super.write(compound);
         compound.putInt("multiplier", multiplier);
         compound.putBoolean("binary", binary);
+        compound.putBoolean("keepCarts", keepCarts);
         inventory.ifPresent(inv -> compound.put("inventory", inv.serializeNBT()));
         return compound;
     }
@@ -64,6 +71,7 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
         super.read(compound);
         this.multiplier = compound.getInt("multiplier");
         this.binary = compound.getBoolean("binary");
+        this.keepCarts = compound.getBoolean("keepCarts");
         inventory.ifPresent(inv -> inv.deserializeNBT(compound.getCompound("inventory")));
     }
 

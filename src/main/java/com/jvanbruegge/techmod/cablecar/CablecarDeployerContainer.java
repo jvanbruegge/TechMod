@@ -4,6 +4,7 @@ import com.jvanbruegge.techmod.Registrator;
 import com.jvanbruegge.techmod.TechModContainer;
 import com.jvanbruegge.techmod.Utils;
 import com.jvanbruegge.techmod.network.PacketHandler;
+import com.jvanbruegge.techmod.network.cablecar.ActivateSliderMessage;
 import com.jvanbruegge.techmod.network.cablecar.CloseInventoryMessage;
 import com.jvanbruegge.techmod.network.cablecar.UpdateDataMessage;
 import lombok.Getter;
@@ -19,6 +20,8 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
+import java.util.List;
+
 public class CablecarDeployerContainer extends TechModContainer {
 
     private final World world;
@@ -29,7 +32,10 @@ public class CablecarDeployerContainer extends TechModContainer {
     private CableCarDeployerScreen screen = null;
 
     @Getter
-    private boolean enabled = false;
+    private boolean enabled = true;
+    @Getter
+    @Setter
+    private boolean active = false;
 
     // Client-side only
     public CablecarDeployerContainer(int windowId, PlayerInventory inventory, PacketBuffer extraData) {
@@ -46,7 +52,7 @@ public class CablecarDeployerContainer extends TechModContainer {
 
         this.addPlayerInventory(inventory, 8, 94);
         this.entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-                .ifPresent(inv -> this.addSlot(new SlotItemHandler(inv, 0, 58, 31)));
+                .ifPresent(inv -> this.addSlot(new SlotItemHandler(inv, 0, 16, 31)));
     }
 
     @Override
@@ -60,11 +66,18 @@ public class CablecarDeployerContainer extends TechModContainer {
         PacketHandler.sendToServer(new CloseInventoryMessage(entity.getPos()));
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+        if(world.isRemote) {
+            PacketHandler.sendToServer(new ActivateSliderMessage.Server(entity.getPos(), active));
+        }
+    }
+
     public void setEnabled(boolean enabled) {
         if(enabled != this.enabled) {
             this.enabled = enabled;
             if(this.screen != null) {
-                this.screen.setTextEnabled(enabled);
+                this.screen.setSliderEnabled(enabled);
             }
         }
     }
@@ -75,7 +88,7 @@ public class CablecarDeployerContainer extends TechModContainer {
         if(this.getMultiplier() != multiplier) {
             this.entity.setMultiplier(multiplier);
             if(world.isRemote && fromScreen) {
-                PacketHandler.sendToServer(new UpdateDataMessage.Server(entity.getPos(), multiplier, isBinary()));
+                PacketHandler.sendToServer(new UpdateDataMessage.Server(entity.getPos(), multiplier, isBinary(), isKeepCarts()));
             }
             if(!fromScreen && this.screen != null) {
                 screen.setMuliplier(multiplier);
@@ -89,15 +102,30 @@ public class CablecarDeployerContainer extends TechModContainer {
         if(this.isBinary() != binary) {
             this.entity.setBinary(binary);
             if(world.isRemote && fromScreen) {
-                PacketHandler.sendToServer(new UpdateDataMessage.Server(entity.getPos(), getMultiplier(), binary));
+                PacketHandler.sendToServer(new UpdateDataMessage.Server(entity.getPos(), getMultiplier(), binary, isKeepCarts()));
             }
             if(!fromScreen && this.screen != null) {
                 screen.updateMode();
             }
         }
     }
+    public boolean isKeepCarts() {
+        return this.entity.isKeepCarts();
+    }
+    public void setKeepCarts(boolean keepCarts, boolean fromScreen) {
+        if(this.isKeepCarts() != keepCarts) {
+            this.entity.setKeepCarts(keepCarts);
+            if(world.isRemote && fromScreen) {
+                PacketHandler.sendToServer(new UpdateDataMessage.Server(entity.getPos(), getMultiplier(), isBinary(), keepCarts));
+            }
+            if(!fromScreen && this.screen != null) {
+                screen.updateKeepCarts();
+            }
+        }
+    }
 
     public static boolean shouldBeEnabled(ServerWorld world, BlockPos pos) {
-        return Utils.getPlayersWithOpenContainer(world, pos, CablecarDeployerContainer.class, null).size() == 0;
+        List<PlayerEntity> active = Utils.getPlayersWithOpenContainer(world, pos, CablecarDeployerContainer.class, null);
+        return !active.stream().anyMatch(player -> ((CablecarDeployerContainer)player.openContainer).isActive());
     }
 }
