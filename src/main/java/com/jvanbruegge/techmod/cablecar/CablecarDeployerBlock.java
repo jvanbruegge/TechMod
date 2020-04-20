@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -90,7 +91,10 @@ public class CablecarDeployerBlock extends Block implements CablecarConnectable 
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity entity, Hand hand, BlockRayTraceResult trace) {
         if(!world.isRemote) {
             TileEntity tileEntity = world.getTileEntity(pos);
-            NetworkHooks.openGui((ServerPlayerEntity) entity, (INamedContainerProvider) tileEntity, pos);
+            NetworkHooks.openGui((ServerPlayerEntity) entity, (INamedContainerProvider) tileEntity, extra -> {
+                extra.writeBlockPos(pos);
+                extra.writeBoolean(CablecarDeployerContainer.shouldBeEnabled((ServerWorld)world, pos));
+            });
         }
         return ActionResultType.SUCCESS;
     }

@@ -2,8 +2,11 @@ package com.jvanbruegge.techmod;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
@@ -46,6 +49,13 @@ public class Utils {
         return StreamSupport.stream(((Iterable<Direction>) () -> Direction.Plane.HORIZONTAL.iterator()).spliterator(), false)
                 .map(dir -> pos.offset(dir))
                 .filter(p -> clazz.isAssignableFrom(world.getBlockState(p).getBlock().getClass()))
+                .collect(Collectors.toList());
+    }
+
+    public static List<PlayerEntity> getPlayersWithOpenContainer(World world, BlockPos pos, Class<? extends Container> clazz, PlayerEntity exclude) {
+        return world.getEntitiesWithinAABB(PlayerEntity.class, new AxisAlignedBB(pos.getX() - 5, pos.getY() - 5, pos.getZ() - 5, pos.getX() + 5, pos.getY() + 5, pos.getZ() + 5))
+                .stream()
+                .filter(player -> player != exclude && player.openContainer != null && clazz.isAssignableFrom(player.openContainer.getClass()))
                 .collect(Collectors.toList());
     }
 
