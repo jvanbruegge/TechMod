@@ -3,7 +3,7 @@ package com.jvanbruegge.techmod.network;
 import com.jvanbruegge.techmod.TechMod;
 import com.jvanbruegge.techmod.network.cablecar.CloseInventoryMessage;
 import com.jvanbruegge.techmod.network.cablecar.EnableTextboxMessage;
-import com.jvanbruegge.techmod.network.cablecar.UpdateMultiplierMessage;
+import com.jvanbruegge.techmod.network.cablecar.UpdateDataMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.ResourceLocation;
@@ -47,13 +47,13 @@ public class PacketHandler {
                 EnableTextboxMessage::encode, EnableTextboxMessage::decode,
                 MessageHandlerOnClient.create(EnableTextboxMessage::onMessage)
         );
-        channel.registerMessage(id++, UpdateMultiplierMessage.Client.class,
-                UpdateMultiplierMessage.Client::encode, UpdateMultiplierMessage.Client::decode,
-                MessageHandlerOnClient.create(UpdateMultiplierMessage.Client::onMessage)
+        channel.registerMessage(id++, UpdateDataMessage.Client.class,
+                UpdateDataMessage.Client::encode, UpdateDataMessage.Client::decode,
+                MessageHandlerOnClient.create(UpdateDataMessage.Client::onMessage)
         );
-        channel.registerMessage(id++, UpdateMultiplierMessage.Server.class,
-                UpdateMultiplierMessage.Server::encode, UpdateMultiplierMessage.Server::decode,
-                MessageHandlerOnServer.create(UpdateMultiplierMessage.Server::onMessage)
+        channel.registerMessage(id++, UpdateDataMessage.Server.class,
+                UpdateDataMessage.Server::encode, UpdateDataMessage.Server::decode,
+                MessageHandlerOnServer.create(UpdateDataMessage.Server::onMessage)
         );
     }
 

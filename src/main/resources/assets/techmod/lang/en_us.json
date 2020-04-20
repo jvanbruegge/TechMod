@@ -1,5 +1,8 @@
 {
   "block.techmod.cablecar_deployer": "Cablecar Deployer",
   "block.techmod.cablecar_deployer.multiplier": "Multiplier",
+  "block.techmod.cablecar_deployer.mode": "Mode",
+  "block.techmod.cablecar_deployer.digital": "Digital",
+  "block.techmod.cablecar_deployer.analog": "Analog",
   "block.techmod.cablecar_track": "Cablecar Track"
 }

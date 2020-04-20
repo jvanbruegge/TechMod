@@ -4,6 +4,7 @@ import com.jvanbruegge.techmod.TechMod;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -15,16 +16,18 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
     private final ITextComponent multiplierText = new TranslationTextComponent("block.techmod.cablecar_deployer.multiplier");
 
     private TextFieldWidget multiplier;
+    private Button mode;
 
     public CableCarDeployerScreen(CablecarDeployerContainer container, PlayerInventory inventory, ITextComponent textComponent) {
         super(container, inventory, textComponent);
+        this.ySize = 176;
     }
 
     @Override
     protected void init() {
         super.init();
         this.minecraft.keyboardListener.enableRepeatEvents(true);
-        this.multiplier = new TextFieldWidget(this.font, this.guiLeft + 54, this.guiTop + 36, 24, 12, I18n.format("block.techmod.cablecar_deployer.multiplier", new Object[0]));
+        this.multiplier = new TextFieldWidget(this.font, this.guiLeft + 91, this.guiTop + 35, 24, 12, I18n.format("block.techmod.cablecar_deployer.multiplier"));
         this.multiplier.setCanLoseFocus(false);
         this.multiplier.changeFocus(true);
         this.multiplier.setTextColor(-1);
@@ -38,6 +41,20 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
         this.children.add(this.multiplier);
         this.container.setScreen(this);
         this.setFocusedDefault(this.multiplier);
+
+        this.mode = new Button(this.guiLeft + 7, this.guiTop + 55, 76, 20, this.getModeText(), button -> {
+            this.container.setBinary(!this.container.isBinary(), true);
+            button.setMessage(this.getModeText());
+        });
+        this.addButton(mode);
+    }
+
+    private String getModeText() {
+        String base = I18n.format("block.techmod.cablecar_deployer.mode");
+
+        String binary = this.container.isBinary() ? "digital" : "analog";
+        String name = I18n.format("block.techmod.cablecar_deployer." + binary);
+        return base + ": " + name;
     }
 
     private void onTextUpdate(String text) {
@@ -54,10 +71,6 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
         this.renderHoveredToolTip(mouseX, mouseY);
     }
 
-    public void setEnabled(boolean enabled) {
-        this.multiplier.setEnabled(enabled);
-    }
-
     @Override
     public boolean keyPressed(int keyCode, int p_keyPressed_2_, int p_keyPressed_3_) {
         if (keyCode == 256) {
@@ -71,7 +84,7 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         this.font.drawString(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
         this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.ySize - 96 + 2), 4210752);
-        this.font.drawString(this.multiplierText.getFormattedText(), 50.0F, 22.0F, 4210752);
+        this.font.drawString(this.multiplierText.getFormattedText(), 87.0F, 21.0F, 4210752);
     }
 
     @Override
@@ -79,7 +92,7 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
         this.renderBackground();
         this.minecraft.getTextureManager().bindTexture(guiTexture);
         this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-        this.blit(this.guiLeft + 50, this.guiTop + 32, 0,  this.container.isEnabled() ? 166 : 182, 28, 16);
+        this.blit(this.guiLeft + 87, this.guiTop + 31, 0,  this.container.isEnabled() ? 176 : 192, 28, 16);
     }
 
     public void setMuliplier(int multiplier) {
@@ -88,5 +101,9 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
 
     public void setTextEnabled(boolean enabled) {
         this.multiplier.setEnabled(enabled);
+    }
+
+    public void updateMode() {
+        this.mode.setMessage(this.getModeText());
     }
 }

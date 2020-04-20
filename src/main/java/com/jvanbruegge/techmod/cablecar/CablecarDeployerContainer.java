@@ -5,7 +5,7 @@ import com.jvanbruegge.techmod.TechModContainer;
 import com.jvanbruegge.techmod.Utils;
 import com.jvanbruegge.techmod.network.PacketHandler;
 import com.jvanbruegge.techmod.network.cablecar.CloseInventoryMessage;
-import com.jvanbruegge.techmod.network.cablecar.UpdateMultiplierMessage;
+import com.jvanbruegge.techmod.network.cablecar.UpdateDataMessage;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -30,8 +30,6 @@ public class CablecarDeployerContainer extends TechModContainer {
 
     @Getter
     private boolean enabled = false;
-    @Getter
-    private int multiplier = 1;
 
     // Client-side only
     public CablecarDeployerContainer(int windowId, PlayerInventory inventory, PacketBuffer extraData) {
@@ -45,11 +43,10 @@ public class CablecarDeployerContainer extends TechModContainer {
         this.entity = (CablecarDeployerTileEntity) world.getTileEntity(pos);
 
         this.enabled = enabled;
-        this.multiplier = entity.getMultiplier();
 
-        this.addPlayerInventory(inventory, 8, 84);
+        this.addPlayerInventory(inventory, 8, 94);
         this.entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-                .ifPresent(inv -> this.addSlot(new SlotItemHandler(inv, 0, 18, 31)));
+                .ifPresent(inv -> this.addSlot(new SlotItemHandler(inv, 0, 58, 31)));
     }
 
     @Override
@@ -71,14 +68,31 @@ public class CablecarDeployerContainer extends TechModContainer {
             }
         }
     }
+    public int getMultiplier() {
+        return this.entity.getMultiplier();
+    }
     public void setMultiplier(int multiplier, boolean fromScreen) {
-        if(this.multiplier != multiplier) {
-            this.multiplier = multiplier;
+        if(this.getMultiplier() != multiplier) {
+            this.entity.setMultiplier(multiplier);
             if(world.isRemote && fromScreen) {
-                PacketHandler.sendToServer(new UpdateMultiplierMessage.Server(entity.getPos(), multiplier));
+                PacketHandler.sendToServer(new UpdateDataMessage.Server(entity.getPos(), multiplier, isBinary()));
             }
             if(!fromScreen && this.screen != null) {
                 screen.setMuliplier(multiplier);
+            }
+        }
+    }
+    public boolean isBinary() {
+        return this.entity.isBinary();
+    }
+    public void setBinary(boolean binary, boolean fromScreen) {
+        if(this.isBinary() != binary) {
+            this.entity.setBinary(binary);
+            if(world.isRemote && fromScreen) {
+                PacketHandler.sendToServer(new UpdateDataMessage.Server(entity.getPos(), getMultiplier(), binary));
+            }
+            if(!fromScreen && this.screen != null) {
+                screen.updateMode();
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.jvanbruegge.techmod.cablecar;
 
 import com.jvanbruegge.techmod.Registrator;
+import lombok.Getter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -23,7 +24,11 @@ import javax.annotation.Nullable;
 
 public class CablecarDeployerTileEntity extends TileEntity implements INamedContainerProvider {
 
+    @Getter
     private int multiplier = 1;
+    @Getter
+    private boolean binary = true;
+
     private LazyOptional<ItemStackHandler> inventory = LazyOptional.of(() -> new ItemStackHandler(1) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -36,11 +41,12 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
         super(Registrator.CablecarDeployer.getTileEntityType());
     }
 
-    public int getMultiplier() {
-        return multiplier;
-    }
     public void setMultiplier(int multiplier) {
         this.multiplier = multiplier;
+        this.markDirty();
+    }
+    public void setBinary(boolean binary) {
+        this.binary = binary;
         this.markDirty();
     }
 
@@ -48,6 +54,7 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
     public CompoundNBT write(CompoundNBT compound) {
         super.write(compound);
         compound.putInt("multiplier", multiplier);
+        compound.putBoolean("binary", binary);
         inventory.ifPresent(inv -> compound.put("inventory", inv.serializeNBT()));
         return compound;
     }
@@ -56,6 +63,7 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
     public void read(CompoundNBT compound) {
         super.read(compound);
         this.multiplier = compound.getInt("multiplier");
+        this.binary = compound.getBoolean("binary");
         inventory.ifPresent(inv -> inv.deserializeNBT(compound.getCompound("inventory")));
     }
 
