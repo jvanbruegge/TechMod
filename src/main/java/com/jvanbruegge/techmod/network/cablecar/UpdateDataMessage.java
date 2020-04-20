@@ -43,6 +43,14 @@ class UpdateDataMessage {
                 container.setMultiplier(msg.getMultiplier(), false);
                 container.setBinary(msg.isBinary(), false);
                 container.setKeepCarts(msg.isKeepCarts(), false);
+            } else {
+                TileEntity entity = player.world.getTileEntity(msg.getPos());
+                if(entity instanceof CablecarDeployerTileEntity) {
+                    CablecarDeployerTileEntity tileEntity = (CablecarDeployerTileEntity)entity;
+                    tileEntity.setMultiplier(msg.getMultiplier());
+                    tileEntity.setBinary(msg.isBinary());
+                    tileEntity.setKeepCarts(msg.isKeepCarts());
+                }
             }
         }
     }

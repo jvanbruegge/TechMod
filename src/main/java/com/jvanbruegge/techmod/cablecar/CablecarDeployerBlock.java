@@ -1,6 +1,6 @@
 package com.jvanbruegge.techmod.cablecar;
 
-import com.jvanbruegge.techmod.Registrator;
+import com.jvanbruegge.techmod.BlockRegistrator;
 import com.jvanbruegge.techmod.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -59,7 +59,7 @@ public class CablecarDeployerBlock extends Block implements CablecarConnectable 
 
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return Registrator.CablecarDeployer.getTileEntityType().create();
+        return BlockRegistrator.CablecarDeployer.getTileEntityType().create();
     }
 
     @Override

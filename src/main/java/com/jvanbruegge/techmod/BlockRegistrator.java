@@ -21,7 +21,7 @@ import net.minecraftforge.fml.network.IContainerFactory;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = TechMod.MODID, bus = Bus.MOD)
-public enum Registrator {
+public enum BlockRegistrator {
     CablecarTrack("cablecar_track", new CablecarTrackBlock(), ItemGroup.TRANSPORTATION),
     CablecarDeployer("cablecar_deployer", new CablecarDeployerBlock(), ItemGroup.TRANSPORTATION, CablecarDeployerTileEntity::new, CablecarDeployerContainer::new, (c, i, t) -> new CableCarDeployerScreen((CablecarDeployerContainer)c, i, t));
 
@@ -32,13 +32,13 @@ public enum Registrator {
     private final ContainerType<?> containerType;
     private final ScreenManager.IScreenFactory<?, ?> screen;
 
-    Registrator(String name, Block block, ItemGroup group) {
+    BlockRegistrator(String name, Block block, ItemGroup group) {
         this(name, block, group, null, (ContainerType<?>)null, null);
     }
-    Registrator(String name, Block block, ItemGroup group, Supplier<? extends TileEntity> entity, IContainerFactory<?> container, ScreenManager.IScreenFactory screen) {
+    BlockRegistrator(String name, Block block, ItemGroup group, Supplier<? extends TileEntity> entity, IContainerFactory<?> container, ScreenManager.IScreenFactory screen) {
        this(name, block, group, TileEntityType.Builder.create(entity, block).build(null), IForgeContainerType.create(container), screen);
     }
-    Registrator(String name, Block block, ItemGroup group, TileEntityType<?> entityType, ContainerType<?> containerType, ScreenManager.IScreenFactory screen) {
+    BlockRegistrator(String name, Block block, ItemGroup group, TileEntityType<?> entityType, ContainerType<?> containerType, ScreenManager.IScreenFactory screen) {
         this.name = name;
         this.block = block;
         this.group = group;
@@ -82,14 +82,14 @@ public enum Registrator {
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        for(Block b : Utils.getEnumValues(Registrator.class, Registrator::getBlock)) {
+        for(Block b : Utils.getEnumValues(BlockRegistrator.class, BlockRegistrator::getBlock)) {
             event.getRegistry().register(b);
         }
     }
 
     @SubscribeEvent
     public static void registerBlockItems(RegistryEvent.Register<Item> event) {
-        for(Registrator val : values()) {
+        for(BlockRegistrator val : values()) {
             event.getRegistry().register(
                     new BlockItem(val.getBlock(), new Item.Properties().group(val.getGroup()))
                             .setRegistryName(TechMod.MODID, val.getName())
@@ -99,14 +99,14 @@ public enum Registrator {
 
     @SubscribeEvent
     public static void registerTileEntityTypes(RegistryEvent.Register<TileEntityType<?>> event) {
-        for(TileEntityType<?> type : Utils.getEnumValues(Registrator.class, Registrator::getTileEntityType)) {
+        for(TileEntityType<?> type : Utils.getEnumValues(BlockRegistrator.class, BlockRegistrator::getTileEntityType)) {
             if(type != null) event.getRegistry().register(type);
         }
     }
 
     @SubscribeEvent
     public static void registerContainerTypes(RegistryEvent.Register<ContainerType<?>> event) {
-        for(ContainerType<?> type : Utils.getEnumValues(Registrator.class, Registrator::getContainerType)) {
+        for(ContainerType<?> type : Utils.getEnumValues(BlockRegistrator.class, BlockRegistrator::getContainerType)) {
             if(type != null) {
                 event.getRegistry().register(type);
             }
@@ -115,7 +115,7 @@ public enum Registrator {
 
     @SubscribeEvent
     public static void registerContainerScreens(FMLClientSetupEvent event) {
-        for(Registrator val : values()) {
+        for(BlockRegistrator val : values()) {
             if(val.getContainerType() != null) {
                 ScreenManager.registerFactory(val.getContainerType(), val.getScreenFactory());
             }

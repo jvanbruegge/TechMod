@@ -1,6 +1,6 @@
 package com.jvanbruegge.techmod.cablecar;
 
-import com.jvanbruegge.techmod.Registrator;
+import com.jvanbruegge.techmod.BlockRegistrator;
 import com.jvanbruegge.techmod.TechModContainer;
 import com.jvanbruegge.techmod.Utils;
 import com.jvanbruegge.techmod.network.PacketHandler;
@@ -43,7 +43,7 @@ public class CablecarDeployerContainer extends TechModContainer {
     }
     // Server-side
     public CablecarDeployerContainer(int windowId, World world, PlayerInventory inventory, BlockPos pos, boolean enabled) {
-        super(Registrator.CablecarDeployer.getContainerType(), windowId);
+        super(BlockRegistrator.CablecarDeployer.getContainerType(), windowId);
         this.world = world;
         this.player = inventory.player;
         this.entity = (CablecarDeployerTileEntity) world.getTileEntity(pos);
@@ -57,7 +57,7 @@ public class CablecarDeployerContainer extends TechModContainer {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(IWorldPosCallable.of(world, entity.getPos()), player, Registrator.CablecarDeployer.getBlock());
+        return isWithinUsableDistance(IWorldPosCallable.of(world, entity.getPos()), player, BlockRegistrator.CablecarDeployer.getBlock());
     }
 
     @Override

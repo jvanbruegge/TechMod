@@ -1,6 +1,6 @@
 package com.jvanbruegge.techmod.cablecar;
 
-import com.jvanbruegge.techmod.Registrator;
+import com.jvanbruegge.techmod.BlockRegistrator;
 import lombok.Getter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -40,7 +40,7 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
     });
 
     public CablecarDeployerTileEntity() {
-        super(Registrator.CablecarDeployer.getTileEntityType());
+        super(BlockRegistrator.CablecarDeployer.getTileEntityType());
     }
 
     public void setMultiplier(int multiplier) {
@@ -80,7 +80,7 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
     public SUpdateTileEntityPacket getUpdatePacket() {
         return new SUpdateTileEntityPacket(
                 this.pos,
-                Registrator.CablecarDeployer.getTileEntityType().hashCode(),
+                BlockRegistrator.CablecarDeployer.getTileEntityType().hashCode(),
                 this.write(new CompoundNBT())
         );
     }
