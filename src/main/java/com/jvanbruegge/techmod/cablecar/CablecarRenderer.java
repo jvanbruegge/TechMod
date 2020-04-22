@@ -1,5 +1,6 @@
 package com.jvanbruegge.techmod.cablecar;
 
+import com.jvanbruegge.techmod.TechMod;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -11,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class CablecarRenderer extends EntityRenderer<CablecarEntity> {
     private CablecarModel model = new CablecarModel();
-    private static final ResourceLocation texture = new ResourceLocation("textures/painting/black.png");
+    private static final ResourceLocation texture = new ResourceLocation(TechMod.MODID, "textures/entity/cablecar.png");
 
     public CablecarRenderer(EntityRendererManager renderManager) {
         super(renderManager);

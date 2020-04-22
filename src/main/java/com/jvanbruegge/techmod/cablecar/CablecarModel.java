@@ -10,10 +10,10 @@ public class CablecarModel extends EntityModel<CablecarEntity> {
     private final ModelRenderer body;
 
     public CablecarModel() {
-        textureWidth = 16;
-        textureHeight = 16;
+        textureWidth = 128/2;
+        textureHeight = 128/2;
 
-        hook = new ModelRenderer(this);
+        hook = new ModelRenderer(this, 80, 90);
         hook.setRotationPoint(0F, 16F, 0F);
         hook.addBox(-5F, -10.25F, -1F, 1F, 8F, 2F, 0F);
         hook.addBox(-4F, -3.25F, -1F, 8F, 1F, 2F, 0F);
@@ -26,11 +26,14 @@ public class CablecarModel extends EntityModel<CablecarEntity> {
         body = new ModelRenderer(this);
         body.setRotationPoint(0F, -9.25F, 0F);
         hook.addChild(body);
-        body.addBox(-4F, -4F, -5F, 8F, 1F, 10F, 0F);
-        body.addBox(-4F, -3F, -5F, 1F, 4F, 10F, 0F);
-        body.addBox(3F, -3F, -5F, 1F, 4F, 10F, 0F);
-        body.addBox(-3F, -3F, 4F, 6F, 4F, 1F, 0F);
-        body.addBox(-3F, -3F, -5F, 6F, 4F, 1F, 0F);
+        body.addBox(-4F, -4F, -5F, 8F, 1F, 10F);
+        body.setTextureOffset(0, 11);
+        body.addBox(-4F, -3F, -4F, 1F, 4F, 8F);
+        body.addBox(3F, -3F, -4F, 1F, 4F, 8F, true);
+        body.setTextureOffset(10, 11);
+        body.addBox(-4F, -3F, 4F, 8F, 4F, 1F);
+        body.setTextureOffset(17, 16);
+        body.addBox(-4F, -3F, -5F, 8F, 4F, 1F, true);
     }
 
     @Override
