@@ -13,15 +13,17 @@ public class CablecarModel extends EntityModel<CablecarEntity> {
         textureWidth = 128/2;
         textureHeight = 128/2;
 
-        hook = new ModelRenderer(this, 80, 90);
+        hook = new ModelRenderer(this);
         hook.setRotationPoint(0F, 16F, 0F);
-        hook.addBox(-5F, -10.25F, -1F, 1F, 8F, 2F, 0F);
-        hook.addBox(-4F, -3.25F, -1F, 8F, 1F, 2F, 0F);
-        hook.addBox(-2.5F, -2.25F, -0.5F, 0.5F, 1F, 1F, 0F);
-        hook.addBox(2F, -2.25F, -0.5F, 0.5F, 1F, 1F, 0F);
-        hook.addBox(1F, -1.75F, -0.5F, 1F, 0.5F, 1F, 0F);
-        hook.addBox(-2F, -1.75F, -0.5F, 1F, 0.5F, 1F, 0F);
-        hook.addBox(4F, -10.25F, -1F, 1F, 8F, 2F, 0F);
+        hook.addBox(-5F, -10.25F, -1F, 1F, 8F, 2F);
+        hook.addBox(4F, -10.25F, -1F, 1F, 8F, 2F);
+        hook.setTextureOffset(0, 23);
+        hook.addBox(-4F, -3.25F, -1F, 8F, 1F, 2F);
+        hook.setTextureOffset(0, 11);
+        hook.addBox(-2.5F, -2.25F, -0.5F, 0.5F, 1F, 1F);
+        hook.addBox(2F, -2.25F, -0.5F, 0.5F, 1F, 1F);
+        hook.addBox(1F, -1.75F, -0.5F, 1F, 0.5F, 1F);
+        hook.addBox(-2F, -1.75F, -0.5F, 1F, 0.5F, 1F);
 
         body = new ModelRenderer(this);
         body.setRotationPoint(0F, -9.25F, 0F);
