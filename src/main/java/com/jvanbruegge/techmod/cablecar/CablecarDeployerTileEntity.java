@@ -1,11 +1,13 @@
 package com.jvanbruegge.techmod.cablecar;
 
 import com.jvanbruegge.techmod.BlockRegistrator;
+import com.jvanbruegge.techmod.ItemRegistrator;
 import lombok.Getter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -36,6 +38,11 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
             markDirty();
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return stack.getItem() == ItemRegistrator.Cablecar.getItem();
         }
     });
 

@@ -7,5 +7,6 @@
   "block.techmod.cablecar_deployer.carts": "Carts",
   "block.techmod.cablecar_deployer.keep": "Keep",
   "block.techmod.cablecar_deployer.eject": "Eject",
-  "block.techmod.cablecar_track": "Cablecar Track"
+  "block.techmod.cablecar_track": "Cablecar Track",
+  "item.techmod.cablecar": "Cablecar"
 }

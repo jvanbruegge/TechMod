@@ -9,7 +9,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.gui.widget.Slider;
 
 public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerContainer> {
     private final ResourceLocation guiTexture = new ResourceLocation(TechMod.MODID, "textures/gui/cablecar_deployer.png");

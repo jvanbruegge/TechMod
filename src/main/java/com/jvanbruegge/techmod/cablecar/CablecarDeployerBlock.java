@@ -46,9 +46,6 @@ public class CablecarDeployerBlock extends Block implements CablecarConnectable 
                 .collect(Collectors.toList())
                 .get(0)
                 .getOpposite();
-        if(context.getPlayer() != null && context.getPlayer().isCrouching()) {
-            dir = dir.getOpposite();
-        }
         return this.getDefaultState().with(facing, dir);
     }
 
