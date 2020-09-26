@@ -70,6 +70,16 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
                 .orElse(ItemStack.EMPTY);
     }
 
+    public boolean putCart() {
+        return !this.inventory
+                .map(handler -> !handler.insertItem(
+                        0,
+                        ItemRegistrator.Cablecar.getItemStack(1),
+                        false
+                ).isEmpty())
+                .orElse(false);
+    }
+
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         super.write(compound);

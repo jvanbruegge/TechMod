@@ -1,7 +1,9 @@
 package com.jvanbruegge.techmod;
 
+import lombok.Getter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -11,8 +13,11 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 public enum ItemRegistrator {
     Cablecar("cablecar", ItemGroup.TRANSPORTATION);
 
+    @Getter
     private final String name;
+    @Getter
     private final Item item;
+    @Getter
     private final ItemGroup group;
 
     ItemRegistrator(String name, ItemGroup group) {
@@ -22,12 +27,8 @@ public enum ItemRegistrator {
                 .setRegistryName(TechMod.MODID, name);
     }
     
-    public Item getItem() { return item; }
-    public ItemGroup getGroup() {
-        return group;
-    }
-    public String getName() {
-        return name;
+    public ItemStack getItemStack(int amount) {
+        return new ItemStack(this.getItem(), amount);
     }
 
     @SubscribeEvent
