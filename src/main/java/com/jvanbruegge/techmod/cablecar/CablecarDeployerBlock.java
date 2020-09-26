@@ -1,14 +1,17 @@
 package com.jvanbruegge.techmod.cablecar;
 
 import com.jvanbruegge.techmod.BlockRegistrator;
+import com.jvanbruegge.techmod.EntityRegistrator;
 import com.jvanbruegge.techmod.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
@@ -16,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -26,6 +30,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CablecarDeployerBlock extends Block implements CablecarConnectable {
@@ -52,6 +57,29 @@ public class CablecarDeployerBlock extends Block implements CablecarConnectable 
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+        return true;
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+        boolean flag = world.isBlockPowered(pos) || world.isBlockPowered(pos.up());
+        CablecarDeployerTileEntity tileEntity = (CablecarDeployerTileEntity)world.getTileEntity(pos);
+        ItemStack stack = tileEntity.extractItem(1, true);
+
+        Direction facing = state.get(CablecarDeployerBlock.facing);
+        BlockPos forward = pos.offset(facing);
+        List<CablecarEntity> entities = world.getEntitiesWithinAABB(CablecarEntity.class, new AxisAlignedBB(forward));
+        if(flag && !stack.isEmpty() && entities.isEmpty()) {
+            tileEntity.extractItem(1, false);
+            CablecarEntity cablecar = (CablecarEntity) EntityRegistrator.Cablecar.getEntityType().create(world);
+            cablecar.setHeading(facing);
+            cablecar.setPosition(forward.getX() + 0.5, forward.getY(), forward.getZ() + 0.5);
+            world.addEntity(cablecar);
+        }
     }
 
     @Override

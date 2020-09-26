@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -61,6 +62,12 @@ public class CablecarDeployerTileEntity extends TileEntity implements INamedCont
     public void setKeepCarts(boolean keepCarts) {
         this.keepCarts = keepCarts;
         this.markDirty();
+    }
+
+    public ItemStack extractItem(int amount, boolean simulate) {
+        return this.inventory
+                .map(handler -> handler.extractItem(0, amount, simulate))
+                .orElse(ItemStack.EMPTY);
     }
 
     @Override

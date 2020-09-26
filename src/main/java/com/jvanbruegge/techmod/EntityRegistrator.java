@@ -16,13 +16,26 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod.EventBusSubscriber(modid = TechMod.MODID, bus = Bus.MOD)
 public enum EntityRegistrator {
-    Cablecar(CablecarEntity::new, EntityClassification.MISC, CablecarRenderer::new, "cablecar");
+    Cablecar(CablecarEntity::new, EntityClassification.MISC, CablecarRenderer::new, "cablecar", 20, 80);
 
     @Getter
     private final String registryName;
     @Getter
     private final EntityType<?> entityType;
     private final IRenderFactory<?> renderer;
+
+    EntityRegistrator(EntityType.IFactory<?> createEntity, EntityClassification classification, IRenderFactory renderer, String registryName, int updateInterval, int trackingRange) {
+        this(
+                EntityType.Builder
+                        .create(createEntity, classification)
+                        .setUpdateInterval(updateInterval)
+                        .setTrackingRange(trackingRange)
+                        .build(registryName)
+                        .setRegistryName(TechMod.MODID, registryName),
+                renderer,
+                registryName
+        );
+    }
 
     EntityRegistrator(EntityType.IFactory<?> createEntity, EntityClassification classification, IRenderFactory renderer, String registryName) {
         this(

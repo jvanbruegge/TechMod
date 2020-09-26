@@ -19,11 +19,10 @@ public class CablecarRenderer extends EntityRenderer<CablecarEntity> {
     }
 
     @Override
-    public void render(CablecarEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+    public void render(CablecarEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+        super.render(entity, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
         matrixStackIn.push();
-
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntitySolid(this.getEntityTexture(entityIn)));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntitySolid(this.getEntityTexture(entity)));
         this.model.render(matrixStackIn, builder, packedLightIn, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         matrixStackIn.pop();
     }

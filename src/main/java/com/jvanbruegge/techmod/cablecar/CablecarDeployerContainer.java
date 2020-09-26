@@ -34,7 +34,6 @@ public class CablecarDeployerContainer extends TechModContainer {
     @Getter
     private boolean enabled = true;
     @Getter
-    @Setter
     private boolean active = false;
 
     // Client-side only
