@@ -1,6 +1,7 @@
 package com.jvanbruegge.techmod.cablecar;
 
 import com.jvanbruegge.techmod.BlockRegistrator;
+import com.jvanbruegge.techmod.ItemRegistrator;
 import com.jvanbruegge.techmod.TechModContainer;
 import com.jvanbruegge.techmod.Utils;
 import com.jvanbruegge.techmod.network.PacketHandler;
@@ -12,6 +13,8 @@ import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
@@ -49,9 +52,9 @@ public class CablecarDeployerContainer extends TechModContainer {
 
         this.enabled = enabled;
 
-        this.addPlayerInventory(inventory, 8, 94);
         this.entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                 .ifPresent(inv -> this.addSlot(new SlotItemHandler(inv, 0, 16, 31)));
+        this.addPlayerInventory(inventory, 8, 94);
     }
 
     @Override
@@ -126,5 +129,46 @@ public class CablecarDeployerContainer extends TechModContainer {
     public static boolean shouldBeEnabled(ServerWorld world, BlockPos pos) {
         List<PlayerEntity> active = Utils.getPlayersWithOpenContainer(world, pos, CablecarDeployerContainer.class, null);
         return !active.stream().anyMatch(player -> ((CablecarDeployerContainer)player.openContainer).isActive());
+    }
+
+    @Override
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.inventorySlots.get(index);
+        if (slot != null && slot.getHasStack()) {
+            ItemStack stack = slot.getStack();
+            itemstack = stack.copy();
+            if (index < 1) {
+                if (!this.mergeItemStack(stack, 1, 37, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else {
+                if(stack.getItem() == ItemRegistrator.Cablecar.getItem()) {
+                    if (!this.mergeItemStack(stack, 0, 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (index < 28) {
+                    if (!this.mergeItemStack(stack, 28, 37, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (index < 37 && !this.mergeItemStack(stack, 1, 28, false)) {
+                    return ItemStack.EMPTY;
+                }
+            }
+
+            if (stack.isEmpty()) {
+                slot.putStack(ItemStack.EMPTY);
+            } else {
+                slot.onSlotChanged();
+            }
+
+            if (stack.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(playerIn, stack);
+        }
+
+        return itemstack;
     }
 }
