@@ -71,8 +71,9 @@ public class CablecarDeployerBlock extends Block implements CablecarConnectable 
         ItemStack stack = tileEntity.extractItem(1, true);
 
         Direction facing = state.get(CablecarDeployerBlock.facing);
+        Block forward = world.getBlockState(pos.offset(facing)).getBlock();
         List<CablecarEntity> entities = world.getEntitiesWithinAABB(CablecarEntity.class, new AxisAlignedBB(pos));
-        if(flag && !stack.isEmpty() && entities.isEmpty()) {
+        if(flag && !stack.isEmpty() && entities.isEmpty() && forward instanceof CablecarConnectable) {
             tileEntity.extractItem(1, false);
             CablecarEntity cablecar = (CablecarEntity) EntityRegistrator.Cablecar.getEntityType().create(world);
             cablecar.setHeading(facing);
