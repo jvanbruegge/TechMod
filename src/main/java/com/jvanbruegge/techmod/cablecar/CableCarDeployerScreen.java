@@ -29,7 +29,7 @@ public class CableCarDeployerScreen extends ContainerScreen<CablecarDeployerCont
         this.multiplier = new TechModSlider(
                 this.guiLeft + 41, this.guiTop + 29, 128, 20,
                 I18n.format("block.techmod.cablecar_deployer.multiplier") + ": ", "",
-                1, 64, this.container.getMultiplier(), false, true, slider -> {
+                0, 64, this.container.getMultiplier(), false, true, slider -> {
                     this.container.setMultiplier(slider.getValueInt(), true);
                 }, slider -> this.container.setActive(true), slider -> this.container.setActive(false)
         );

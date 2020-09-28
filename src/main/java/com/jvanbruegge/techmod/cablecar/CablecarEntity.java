@@ -3,12 +3,9 @@ package com.jvanbruegge.techmod.cablecar;
 import com.jvanbruegge.techmod.BlockRegistrator;
 import com.jvanbruegge.techmod.ItemRegistrator;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
@@ -24,6 +21,7 @@ public class CablecarEntity extends Entity {
     private static final DataParameter<Direction> HEADING = EntityDataManager.createKey(CablecarEntity.class, DataSerializers.DIRECTION);
     private static final DataParameter<Boolean> ON_RAIL = EntityDataManager.createKey(CablecarEntity.class, DataSerializers.BOOLEAN);
     public static final float movementSpeed = 0.6f / 20f;
+    public static final float length = 0.75f;
 
     public CablecarEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -40,26 +38,34 @@ public class CablecarEntity extends Entity {
     public void setHeading(Direction heading) {
         dataManager.set(HEADING, heading);
     }
-
+    public boolean isOnRail() { return this.dataManager.get(ON_RAIL); }
 
     @Override
     public void tick() {
         super.tick();
         if(!this.isAlive()) return;
 
+        Block track = BlockRegistrator.CablecarTrack.getBlock();
+        Block deployer = BlockRegistrator.CablecarDeployer.getBlock();
+
         Direction heading = this.dataManager.get(HEADING);
         int offsetX = heading.getXOffset();
         int offsetZ = heading.getZOffset();
 
-        BlockPos pos = new BlockPos(this.getPosX() - 0.5 * offsetX, this.getPosY(), this.getPosZ() - 0.5 * offsetZ);
+        BlockPos front = new BlockPos(this.getPosX() + length/2 * offsetX, this.getPosY(), this.getPosZ() + length/2 * offsetZ);
+        Block blockFront = world.getBlockState(front).getBlock();
+        BlockPos back = new BlockPos(this.getPosX() - length/2 * offsetX, this.getPosY(), this.getPosZ() - length/2 * offsetZ);
+        Block blockBack = world.getBlockState(back).getBlock();
 
-        Block current = world.getBlockState(pos).getBlock();
-        System.out.println(current);
-        if(current == BlockRegistrator.CablecarTrack.getBlock()) {
+        if(blockBack == track) {
             this.dataManager.set(ON_RAIL, true);
         }
-        else if(current == BlockRegistrator.CablecarDeployer.getBlock() && this.dataManager.get(ON_RAIL)) {
-            CablecarDeployerTileEntity entity = (CablecarDeployerTileEntity) world.getTileEntity(pos);
+        if (this.isOnRail() && !(blockFront instanceof CablecarConnectable)) {
+            return;
+        }
+
+        if(blockBack == deployer && this.isOnRail()) {
+            CablecarDeployerTileEntity entity = (CablecarDeployerTileEntity) world.getTileEntity(back);
             if(!entity.putCart()) {
                 this.entityDropItem(ItemRegistrator.Cablecar.getItemStack(1));
             }
@@ -76,11 +82,13 @@ public class CablecarEntity extends Entity {
     @Override
     protected void readAdditional(CompoundNBT compound) {
         this.dataManager.set(HEADING, Direction.byIndex(compound.getInt("heading")));
+        this.dataManager.set(ON_RAIL, compound.getBoolean("on_rail"));
     }
 
     @Override
     protected void writeAdditional(CompoundNBT compound) {
         compound.putInt("heading", this.dataManager.get(HEADING).getIndex());
+        compound.putBoolean("on_rail", this.dataManager.get(ON_RAIL));
     }
 
     @Override

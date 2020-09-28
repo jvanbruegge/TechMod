@@ -7,7 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -28,7 +27,7 @@ import javax.annotation.Nullable;
 public class CablecarDeployerTileEntity extends TileEntity implements INamedContainerProvider {
 
     @Getter
-    private int multiplier = 1;
+    private int multiplier = 64;
     @Getter
     private boolean binary = true;
     @Getter
