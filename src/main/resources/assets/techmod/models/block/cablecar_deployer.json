@@ -1,0 +1,8 @@
+{
+  "parent": "techmod:block/cube_front_back",
+  "textures": {
+    "front": "techmod:block/cablecar_deployer/front",
+    "back": "techmod:block/cablecar_deployer/back",
+    "side": "techmod:block/cablecar_deployer/side"
+  }
+}
